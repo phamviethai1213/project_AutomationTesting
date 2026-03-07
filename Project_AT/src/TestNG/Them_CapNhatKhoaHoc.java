@@ -33,11 +33,11 @@ public class Them_CapNhatKhoaHoc {
         Thread.sleep(3000);
         coursePage.clickAddNew();
         Thread.sleep(3000);
-        coursePage.uploadImage("D:\\images.jpg");
+        coursePage.uploadImage("C:\\Users\\hh\\git\\repository\\Project_AT\\Json_img\\images.jpg");
         Thread.sleep(3000);
 
         JSONParser jsonparser = new JSONParser();
-        JSONArray listChuong = (JSONArray) jsonparser.parse(new FileReader("D:\\taokhoahoc.json"));
+        JSONArray listChuong = (JSONArray) jsonparser.parse(new FileReader("C:\\Users\\hh\\git\\repository\\Project_AT\\Json_img\\taokhoahoc.json"));
         for (int i = 0; i < listChuong.size(); i++) {
             JSONObject data = (JSONObject) listChuong.get(i);
             coursePage.fillNewCourse((String) data.get("ten_khoahoc"), (String) data.get("mota_khoahoc"));
@@ -57,7 +57,7 @@ public class Them_CapNhatKhoaHoc {
         Thread.sleep(3000);
 
         JSONParser jsonparser = new JSONParser();
-        JSONArray listChuong = (JSONArray) jsonparser.parse(new FileReader("D:\\thembaihoc.json"));
+        JSONArray listChuong = (JSONArray) jsonparser.parse(new FileReader("C:\\Users\\hh\\git\\repository\\Project_AT\\Json_img\\thembaihoc.json"));
         for (int i = 0; i < listChuong.size(); i++) {
             JSONObject data = (JSONObject) listChuong.get(i);
             coursePage.updateContent(
