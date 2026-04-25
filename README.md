@@ -1,176 +1,182 @@
-# 🧪 Project_AT — Kiểm Thử Tự Động Website E-Learning
+# Project_AT — Automation Testing for PLT E-Learning
 
-Dự án kiểm thử tự động cho nền tảng học trực tuyến **PLT E-Learning** ([elearning.plt.pro.vn](https://elearning.plt.pro.vn/trang-chu)), sử dụng **Selenium WebDriver** + **TestNG** theo mô hình **Page Object Model (POM)**.
+## Giới thiệu
 
----
+Đây là dự án kiểm thử tự động cho nền tảng học trực tuyến PLT E-Learning, truy cập tại địa chỉ https://elearning.plt.pro.vn. Dự án được xây dựng bằng Java, sử dụng Selenium WebDriver để điều khiển trình duyệt và TestNG làm framework tổ chức và thực thi các ca kiểm thử.
 
-## 📋 Mục Lục
-
-- [Tổng Quan](#tổng-quan)
-- [Công Nghệ Sử Dụng](#công-nghệ-sử-dụng)
-- [Cấu Trúc Dự Án](#cấu-trúc-dự-án)
-- [Các Test Case](#các-test-case)
-- [Cài Đặt & Chạy](#cài-đặt--chạy)
-- [Dữ Liệu Test (JSON)](#dữ-liệu-test-json)
-- [Yêu Cầu Hệ Thống](#yêu-cầu-hệ-thống)
+Kiến trúc dự án tuân theo mô hình Page Object Model (POM), trong đó mỗi trang giao diện được đóng gói thành một class riêng biệt. Cách tổ chức này giúp tách biệt rõ ràng giữa logic điều hướng giao diện và logic kiểm thử, từ đó dễ bảo trì và mở rộng khi hệ thống thay đổi.
 
 ---
 
-## 📌 Tổng Quan
+## Phạm vi kiểm thử
 
-Dự án tập trung kiểm thử hai luồng nghiệp vụ chính của hệ thống:
+Dự án tập trung vào hai luồng nghiệp vụ chính của hệ thống:
 
-| Module | Mô tả |
+**Luồng quản lý khóa học (dành cho Admin):** Kiểm thử chức năng tạo khóa học mới và cập nhật nội dung chương, bài học thông qua giao diện quản trị.
+
+**Luồng giao diện học viên:** Kiểm thử trải nghiệm người dùng khi duyệt khóa học, xem nội dung chương và bài học, so sánh dữ liệu hiển thị với kết quả kỳ vọng, và phát video bài giảng.
+
+---
+
+## Công nghệ sử dụng
+
+| Thành phần | Phiên bản |
 |---|---|
-| **Quản lý Khóa Học (Admin)** | Tạo khóa học mới, cập nhật nội dung chương & bài học |
-| **Giao Diện Học Viên (User)** | Duyệt khóa học, xem chương/bài, kiểm tra thông tin hiển thị, phát video |
+| Java | SE 23 |
+| Selenium WebDriver | 3.5.3 |
+| TestNG | 7.11.0 |
+| json-simple | 1.1.1 |
+| SLF4J API | 2.0.13 |
+| SLF4J Simple | 2.0.13 |
+| ChromeDriver | Đính kèm trong thư mục driver/ |
+| Môi trường phát triển | Eclipse IDE |
 
 ---
 
-## 🛠️ Công Nghệ Sử Dụng
-
-| Thư Viện / Công Cụ | Phiên Bản | Mục Đích |
-|---|---|---|
-| Java | SE 23 | Ngôn ngữ lập trình chính |
-| Selenium WebDriver | 3.5.3 | Tự động hóa trình duyệt |
-| TestNG | 7.11.0 | Framework kiểm thử |
-| json-simple | 1.1.1 | Đọc dữ liệu test từ file JSON |
-| SLF4J | 2.0.13 | Logging |
-| ChromeDriver | (đính kèm) | Điều khiển Google Chrome |
-| Eclipse IDE | — | Môi trường phát triển |
-
----
-
-## 📂 Cấu Trúc Dự Án
+## Cấu trúc dự án
 
 ```
 Project_AT/
 ├── driver/
-│   └── chromedriver.exe          # ChromeDriver để điều khiển Chrome
+│   └── chromedriver.exe
+├── Json_img/
+│   ├── taokhoahoc.json
+│   ├── thembaihoc.json
+│   ├── danhsach_khoahoc.json
+│   ├── diendan.json
+│   ├── themsinhvien.json
+│   └── images.jpg (và các ảnh khác)
 ├── src/
-│   ├── pages/                    # Page Object Classes
-│   │   ├── LoginPage.java        # Trang đăng nhập (Admin)
-│   │   ├── LoginPageUser.java    # Trang đăng nhập (Học viên)
-│   │   ├── CoursePage.java       # Trang quản lý khóa học (Admin)
-│   │   └── LearningPage.java     # Trang học của học viên
-│   └── TestNG/                   # Test Classes
-│       ├── Them_CapNhatKhoaHoc.java   # Test tạo & cập nhật khóa học
-│       └── Giao_Dien_Hoc_Vien.java   # Test giao diện học viên
-├── testng.xml                    # Cấu hình chạy TestNG Suite
-├── .classpath                    # Cấu hình thư viện Eclipse
-└── .project                      # Cấu hình dự án Eclipse
+│   ├── pages/
+│   │   ├── LoginPage.java
+│   │   ├── LoginPageUser.java
+│   │   ├── CoursePage.java
+│   │   └── LearningPage.java
+│   └── TestNG/
+│       ├── Them_CapNhatKhoaHoc.java
+│       └── Giao_Dien_Hoc_Vien.java
+├── testng.xml
+├── .classpath
+└── .project
 ```
+
+Thư mục `pages/` chứa các Page Object Class, mỗi class tương ứng với một trang trên hệ thống. Thư mục `TestNG/` chứa các class kiểm thử thực thi các ca kiểm thử theo kịch bản. Dữ liệu đầu vào được đặt trong `Json_img/` dưới dạng file JSON, tách biệt hoàn toàn với mã nguồn.
 
 ---
 
-## ✅ Các Test Case
+## Mô tả các ca kiểm thử
 
-### 🔷 Module 1: Thêm & Cập Nhật Khóa Học (`Them_CapNhatKhoaHoc.java`)
+### Module 1: Thêm và cập nhật khóa học
 
-> **URL:** `https://elearning.plt.pro.vn/trang-chu` | **Tài khoản:** Admin
+File thực thi: `src/TestNG/Them_CapNhatKhoaHoc.java`
 
-| Test Case | Mô tả | Dữ liệu đầu vào |
-|---|---|---|
-| **TC2** (priority=1) | Đăng nhập Admin → Vào menu Khóa học → Thêm khóa học mới (upload ảnh + điền thông tin) → Xác nhận lưu | `taokhoahoc.json` |
-| **TC1** (priority=2) | Chọn khóa học "Database_nhom3" → Mở tab "Nội dung" → Cập nhật tiêu đề/mô tả chương và bài học → Lưu | `thembaihoc.json` |
+Tài khoản sử dụng: Admin (`test.pltsolutions@gmail.com`)
 
-**Luồng TC2:**
-```
-Login (Admin) → Menu "Khóa học" → "Thêm mới" → Upload ảnh bìa
-→ Nhập tên & mô tả (từ JSON) → Lưu → Xác nhận
-```
+**TC2 (priority = 1) — Tạo khóa học mới**
 
-**Luồng TC1:**
-```
-Chọn khóa học "Database_nhom3" → Tab "Nội dung" → "Sửa nội dung"
-→ Cập nhật tiêu đề/mô tả chương & bài học (từ JSON) → Lưu → Xác nhận
-```
+Ca kiểm thử này mô phỏng luồng một người quản trị tạo một khóa học hoàn chỉnh: đăng nhập vào hệ thống, điều hướng đến menu Khóa học, mở form thêm mới, tải ảnh bìa lên thông qua hộp thoại file của hệ điều hành (dùng Robot API), nhập tên và mô tả khóa học lấy từ file `taokhoahoc.json`, sau đó lưu và xác nhận. Quy trình lặp lại cho tất cả bộ dữ liệu có trong file JSON.
+
+**TC1 (priority = 2) — Cập nhật nội dung khóa học**
+
+Ca kiểm thử này thực hiện sau TC2. Nó chọn khóa học "Database_nhom3" từ danh sách, mở tab Nội dung, vào chế độ chỉnh sửa, rồi cập nhật tiêu đề và mô tả của từng chương và bài học theo dữ liệu trong file `thembaihoc.json`. Sau mỗi lần cập nhật, hệ thống sẽ lưu và xác nhận thay đổi.
 
 ---
 
-### 🔷 Module 2: Giao Diện Học Viên (`Giao_Dien_Hoc_Vien.java`)
+### Module 2: Giao diện học viên
 
-> **URL:** `https://elearning.plt.pro.vn/trang-chu` | **Tài khoản:** Học viên
+File thực thi: `src/TestNG/Giao_Dien_Hoc_Vien.java`
 
-| Test Case | Mô tả |
-|---|---|
-| **TC1** (priority=1) | Đăng nhập → Chọn khoá học "Lập trình Web cơ bản" → Duyệt qua toàn bộ 6 chương và tất cả bài học |
-| **TC2** (priority=2) | So sánh tên từng chương hiển thị trên UI với dữ liệu kỳ vọng (KHỚP / KHÔNG KHỚP) |
-| **TC3** (priority=3) | So sánh mô tả từng chương hiển thị trên UI với dữ liệu kỳ vọng |
-| **TC4** (priority=4) | So sánh tên từng bài học trong tất cả 6 chương với dữ liệu kỳ vọng |
-| **TC5** (priority=5) | Điều hướng sang khóa học khác → Kiểm tra mô tả bài học → Phát video YouTube nhúng trong bài |
+Tài khoản sử dụng: Học viên (`test1.pltsolutions@gmail.com`)
 
-**Khóa học được kiểm thử (TC1–TC4):** `Lập trình Web cơ bản` gồm 6 chương:
-1. HTML cơ bản (9 bài)
-2. CSS và thiết kế giao diện (8 bài)
-3. JavaScript căn bản (8 bài)
-4. JavaScript nâng cao (4 bài)
-5. Responsive Website (3 bài)
-6. Dự án mini Website cá nhân (4 bài)
+**TC1 (priority = 1) — Duyệt toàn bộ khóa học**
+
+Sau khi đăng nhập, học viên chọn khóa học "Lập trình Web cơ bản" và duyệt qua toàn bộ 6 chương với tổng cộng 36 bài học. Ca kiểm thử xác nhận rằng tất cả các bài học có thể được click và hiển thị bình thường.
+
+**TC2 (priority = 2) — Kiểm tra tên chương**
+
+So sánh tên hiển thị của từng chương trên giao diện với danh sách kỳ vọng. Kết quả của từng chương được in ra console dưới dạng KHOP hoặc KHONG KHOP kèm giá trị thực tế.
+
+Danh sách kỳ vọng:
+- Chuong 1: HTML co ban
+- Chuong 2: CSS va thiet ke giao dien
+- Chuong 3: JavaScript can ban
+- Chuong 4: JavaScript nang cao
+- Chuong 5: Responsive Website
+- Chuong 6: Du an mini Website ca nhan
+
+**TC3 (priority = 3) — Kiểm tra mô tả chương**
+
+Tương tự TC2 nhưng áp dụng cho phần mô tả của mỗi chương. Đảm bảo nội dung giải thích mục tiêu học tập được hiển thị đúng với dữ liệu đã nhập.
+
+**TC4 (priority = 4) — Kiểm tra tên bài học**
+
+Duyệt qua tất cả bài học trong 6 chương và so sánh tên từng bài với danh sách kỳ vọng. Chương 1 có 9 bài, các chương còn lại có từ 3 đến 8 bài tùy theo cấu trúc khóa học.
+
+**TC5 (priority = 5) — Kiểm tra mô tả bài học và phát video**
+
+Điều hướng sang một khóa học khác, mở các bài học trong chương 1 và chương 2, so sánh nội dung mô tả bài học với dữ liệu kỳ vọng. Sau đó, ca kiểm thử chuyển focus vào iframe chứa video YouTube và thực hiện click vào nút phát để xác nhận chức năng phát video hoạt động bình thường.
 
 ---
 
-## 🚀 Cài Đặt & Chạy
+## Cài đặt và chạy
 
-### 1. Yêu cầu cài đặt trước
+### Yêu cầu ban đầu
 
-- [Java JDK 23+](https://www.oracle.com/java/technologies/downloads/)
-- [Eclipse IDE](https://www.eclipse.org/downloads/) (có hỗ trợ TestNG plugin)
-- [Google Chrome](https://www.google.com/chrome/) (phiên bản khớp với `chromedriver.exe`)
-- Plugin **TestNG for Eclipse** (cài qua Eclipse Marketplace)
+- Java JDK 23 trở lên
+- Eclipse IDE (đã cài plugin TestNG for Eclipse)
+- Google Chrome với phiên bản tương thích với `chromedriver.exe` đính kèm
 
-### 2. Clone dự án
+### Các bước thiết lập
+
+**Bước 1 — Clone dự án**
 
 ```bash
-git clone https://github.com/<your-username>/Project_AT.git
+git clone https://github.com/haipham1213/project_AutomationTesting.git
 ```
 
-### 3. Import vào Eclipse
+**Bước 2 — Import vào Eclipse**
 
-1. Mở Eclipse → **File > Import > Existing Projects into Workspace**
-2. Trỏ đến thư mục `Project_AT`
-3. Click **Finish**
+Mở Eclipse, vào File > Import > Existing Projects into Workspace, trỏ đến thư mục vừa clone về và nhấn Finish.
 
-### 4. Thêm thư viện JAR
+**Bước 3 — Thêm thư viện JAR**
 
-Download các file JAR sau và đặt vào một thư mục cố định (ví dụ `C:\ThuVienTest\`), sau đó thêm vào **Build Path** của project:
+Tải các file JAR sau về máy và thêm vào Build Path của project (chuột phải vào project > Properties > Java Build Path > Add External JARs):
 
-| File JAR | Tải tại |
+| File JAR | Nguồn tải |
 |---|---|
-| `selenium-server-standalone-3.5.3.jar` | [Selenium Releases](https://github.com/SeleniumHQ/selenium/releases) |
-| `testng-7.11.0.jar` | [TestNG Maven](https://mvnrepository.com/artifact/org.testng/testng) |
-| `json-simple-1.1.1.jar` | [JSON Simple](https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple) |
-| `slf4j-api-2.0.13.jar` | [SLF4J](https://mvnrepository.com/artifact/org.slf4j/slf4j-api) |
-| `slf4j-simple-2.0.13.jar` | [SLF4J](https://mvnrepository.com/artifact/org.slf4j/slf4j-simple) |
+| selenium-server-standalone-3.5.3.jar | https://github.com/SeleniumHQ/selenium/releases |
+| testng-7.11.0.jar | https://mvnrepository.com/artifact/org.testng/testng |
+| json-simple-1.1.1.jar | https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple |
+| slf4j-api-2.0.13.jar | https://mvnrepository.com/artifact/org.slf4j/slf4j-api |
+| slf4j-simple-2.0.13.jar | https://mvnrepository.com/artifact/org.slf4j/slf4j-simple |
 
-> ⚠️ Sau khi thêm JAR, cập nhật đường dẫn trong file `.classpath` nếu vị trí thư mục khác.
+Sau khi thêm JAR, cập nhật lại file `.classpath` nếu đường dẫn thư mục trên máy bạn khác với cấu hình mặc định.
 
-### 5. Cập nhật đường dẫn ChromeDriver
+**Bước 4 — Cập nhật đường dẫn ChromeDriver**
 
-Mở các file test và cập nhật đường dẫn ChromeDriver:
+Trong cả hai file test, kiểm tra và sửa dòng sau cho phù hợp với vị trí thực tế trên máy:
 
 ```java
-// Trong Them_CapNhatKhoaHoc.java và Giao_Dien_Hoc_Vien.java
 System.setProperty("webdriver.chrome.driver", "D:\\Project_AT\\driver\\chromedriver.exe");
 ```
 
-Thay bằng đường dẫn tuyệt đối tương ứng trên máy của bạn.
+**Bước 5 — Chuẩn bị dữ liệu test**
 
-### 6. Chuẩn bị dữ liệu test
+File JSON dữ liệu đã có sẵn trong thư mục `Json_img/`. Tuy nhiên, trong code đang trỏ đường dẫn tuyệt đối (ví dụ `D:\taokhoahoc.json`), nên bạn cần cập nhật lại đường dẫn trong các file test hoặc sao chép file JSON sang vị trí tương ứng.
 
-Tạo 2 file JSON tại ổ `D:\` (hoặc cập nhật đường dẫn trong code):
+Cấu trúc file `taokhoahoc.json`:
 
-**`D:\taokhoahoc.json`** — Dữ liệu tạo khóa học:
 ```json
 [
   {
-    "ten_khoahoc": "Tên khóa học mới",
-    "mota_khoahoc": "Mô tả ngắn về khóa học"
+    "ten_khoahoc": "Tên khóa học",
+    "mota_khoahoc": "Mô tả khóa học"
   }
 ]
 ```
 
-**`D:\thembaihoc.json`** — Dữ liệu cập nhật bài học:
+Cấu trúc file `thembaihoc.json`:
+
 ```json
 [
   {
@@ -182,51 +188,22 @@ Tạo 2 file JSON tại ổ `D:\` (hoặc cập nhật đường dẫn trong cod
 ]
 ```
 
-**Ảnh bìa khóa học:** Đặt file ảnh tại `D:\images.jpg` (hoặc cập nhật đường dẫn trong `TC2`).
+**Bước 6 — Chạy kiểm thử**
 
-### 7. Chạy kiểm thử
-
-**Cách 1 — Chạy file TestNG cụ thể:**
-- Click chuột phải vào `Them_CapNhatKhoaHoc.java` hoặc `Giao_Dien_Hoc_Vien.java`
-- Chọn **Run As > TestNG Test**
-
-**Cách 2 — Chạy toàn bộ Suite:**
-- Click chuột phải vào `testng.xml`
-- Chọn **Run As > TestNG Suite**
+Chuột phải vào file `Them_CapNhatKhoaHoc.java` hoặc `Giao_Dien_Hoc_Vien.java`, chọn Run As > TestNG Test để chạy từng module riêng lẻ. Có thể chạy toàn bộ suite qua file `testng.xml` bằng cách chuột phải > Run As > TestNG Suite.
 
 ---
 
-## 📁 Dữ Liệu Test (JSON)
+## Lưu ý khi sử dụng
 
-Dự án sử dụng file JSON bên ngoài để tách dữ liệu khỏi code test, giúp dễ dàng thay đổi test data mà không cần sửa source code.
+Các đường dẫn tuyệt đối được hard-code trong mã nguồn (đường dẫn ChromeDriver, file JSON, ảnh bìa) cần được cập nhật lại cho phù hợp với môi trường máy cục bộ trước khi chạy.
 
-| File | Dùng bởi | Mục đích |
-|---|---|---|
-| `D:\taokhoahoc.json` | `TC2` | Danh sách khóa học cần tạo |
-| `D:\thembaihoc.json` | `TC1` | Nội dung chương & bài học cần cập nhật |
+Phiên bản ChromeDriver phải khớp với phiên bản Google Chrome đang cài trên máy. Nếu Chrome được cập nhật tự động, có thể cần tải lại ChromeDriver tương ứng tại https://chromedriver.chromium.org/downloads.
 
----
-
-## 💻 Yêu Cầu Hệ Thống
-
-| Thành phần | Yêu cầu |
-|---|---|
-| Hệ điều hành | Windows 10/11 |
-| Java | JDK 23 trở lên |
-| Trình duyệt | Google Chrome (phiên bản phù hợp với ChromeDriver) |
-| RAM | Tối thiểu 4 GB |
-| IDE | Eclipse IDE for Java Developers |
+Các ca kiểm thử trong cùng một file chạy tuần tự theo thứ tự `priority` và có sự phụ thuộc lẫn nhau về trạng thái UI. Ví dụ, TC1 trong `Them_CapNhatKhoaHoc.java` phải chạy sau TC2 vì nó thao tác trên dữ liệu vừa được tạo.
 
 ---
 
-## 👥 Nhóm Phát Triển
+## Thông tin dự án
 
-Dự án kiểm thử tự động được thực hiện trong khuôn khổ thực tập / học phần kiểm thử phần mềm tại **PLT Solutions**.
-
----
-
-## 📝 Ghi Chú
-
-- Các đường dẫn tuyệt đối (driver, JSON, ảnh) cần được cập nhật theo môi trường máy cục bộ trước khi chạy.
-- ChromeDriver phải có phiên bản tương thích với Google Chrome đang cài đặt. Kiểm tra tại [chromedriver.chromium.org](https://chromedriver.chromium.org/downloads).
-- Các test case chạy tuần tự theo `priority` và phụ thuộc vào trạng thái UI sau mỗi bước.
+Dự án được thực hiện trong khuôn khổ thực tập tại PLT Solutions, phục vụ mục đích học tập và áp dụng kiểm thử tự động vào sản phẩm thực tế.
